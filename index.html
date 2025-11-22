@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MakerMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rokkitt:wght@100..900&family=Sancreek&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Crimson Text"', 'serif'], // Roman font for body text
+              serif: ['"Rokkitt"', 'serif'], // Rustic slab serif for subheaders
+              display: ['"Sancreek"', 'cursive'], // Ornamental western font for titles
+              hand: ['"Caveat"', 'cursive'],
+            },
+            boxShadow: {
+              'scrappy': '6px 6px 0px 0px #000000',
+              'scrappy-sm': '3px 3px 0px 0px #000000',
+              'scrappy-lg': '10px 10px 0px 0px #000000',
+            },
+            backgroundImage: {
+              'sarape': "repeating-linear-gradient(90deg, #F50057 0px, #F50057 20px, #FFEB3B 20px, #FFEB3B 40px, #00BCD4 40px, #00BCD4 60px, #2962FF 60px, #2962FF 80px, #00E676 80px, #00E676 100px, #000000 100px, #000000 102px)",
+              'talavera': "radial-gradient(circle at 25px 25px, #F50057 6px, transparent 7px), radial-gradient(circle at 75px 75px, #00BCD4 6px, transparent 7px), radial-gradient(circle at 25px 75px, #FFEB3B 4px, transparent 5px), radial-gradient(circle at 75px 25px, #2962FF 4px, transparent 5px)",
+            },
+            backgroundSize: {
+              'talavera': '100px 100px',
+            },
+            colors: {
+              paper: '#FFFDF5',
+              ink: '#0a0a0a',
+              // Authentic Mexican Textile Palette - Hyper Saturated
+              rosa: {
+                100: '#FFD6E7', 
+                300: '#FF80AB',
+                500: '#F50057', // Rosa Mexicano (High Viz Pink)
+                700: '#C51162',
+              },
+              azul: {
+                100: '#B2EBF2',
+                300: '#4DD0E1',
+                500: '#00BCD4', // Bright Turquoise
+                700: '#0097A7',
+              },
+              cobalt: {
+                500: '#2962FF', // Electric Royal Blue
+                900: '#0D47A1',
+              },
+              sol: {
+                100: '#FFF9C4',
+                300: '#FFF176',
+                500: '#FFEB3B', // Canary Yellow
+                700: '#FBC02D',
+              },
+              naranja: {
+                500: '#FF6D00', // Bright Orange
+                700: '#E65100', 
+              },
+              verde: {
+                500: '#00E676', // Neon Green
+                700: '#2E7D32', 
+              },
+              morado: {
+                100: '#E1BEE7',
+                300: '#BA68C8',
+                500: '#D500F9', // Vibrant Purple
+                700: '#AA00FF',
+              },
+            },
+            animation: {
+              blob: "blob 10s infinite",
+              float: "float 6s ease-in-out infinite",
+              fadeIn: "fadeIn 0.5s ease-out",
+            },
+            keyframes: {
+              blob: {
+                "0%": { transform: "translate(0px, 0px) scale(1)" },
+                "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                "100%": { transform: "translate(0px, 0px) scale(1)" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              fadeIn: {
+                "0%": { opacity: "0", transform: "translateY(10px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              }
+            },
+          },
+        },
+      };
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-paper text-ink antialiased font-sans selection:bg-rosa-500 selection:text-white">
+    <div id="root"></div>
+  </body>
+</html>
