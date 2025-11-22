@@ -15,6 +15,7 @@ interface ProjectDetailProps {
 export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, reviews = [], onAddReview }) => {
   const [resources, setResources] = useState<SearchResult[]>([]);
   const [loadingResources, setLoadingResources] = useState(false);
+  const [resourceError, setResourceError] = useState<string | null>(null);
   
   // Review Form State
   const [newRating, setNewRating] = useState(0);
@@ -23,9 +24,16 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, r
   useEffect(() => {
     const fetchResources = async () => {
       setLoadingResources(true);
-      const results = await findProjectResources(project.title, project.category);
-      setResources(results);
-      setLoadingResources(false);
+      setResourceError(null);
+      try {
+        const results = await findProjectResources(project.title, project.category);
+        setResources(results);
+      } catch (err: any) {
+        console.error("Error fetching project resources:", err);
+        setResourceError("Could not fetch online resources. The search tool might be down.");
+      } finally {
+        setLoadingResources(false);
+      }
     };
 
     fetchResources();
@@ -126,6 +134,8 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, r
                   <div className="h-12 w-12 bg-white rounded-full"></div>
                   <div className="h-4 bg-white flex-grow mt-4"></div>
                </div>
+             ) : resourceError ? (
+               <p className="font-sans italic text-rosa-700 bg-white border-2 border-rosa-200 p-3">{resourceError}</p>
              ) : (
                <ul className="space-y-4">
                  {resources.length > 0 ? resources.map((res, idx) => (

@@ -16,12 +16,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, inventory, onSelectP
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [stashBuster, setStashBuster] = useState<Project | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
     const loadProjects = async () => {
       setLoading(true);
+      setError(null);
       try {
         const [recs, stash] = await Promise.all([
           getRecommendedProjects(user, inventory),
@@ -32,8 +34,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, inventory, onSelectP
           setProjects(recs);
           setStashBuster(stash);
         }
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        console.error("Dashboard loading error:", err);
+        if (isMounted) {
+           setError(err.message || "Failed to generate creative projects. The AI might be taking a siesta.");
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -42,7 +47,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, inventory, onSelectP
     loadProjects();
 
     return () => { isMounted = false; };
-  }, [user]);
+  }, [user, inventory]);
+
+  if (error) {
+    return (
+        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+            <div className="bg-rosa-100 border-4 border-black p-10 shadow-scrappy-lg -rotate-1">
+                <span className="text-6xl">🤕</span>
+                <h2 className="font-display text-5xl text-rosa-700 mt-4 mb-4">¡Ay, caramba!</h2>
+                <p className="font-sans text-2xl text-black mb-2">Something went wrong.</p>
+                <div className="font-sans text-lg text-gray-700 bg-white border-2 border-dashed border-gray-400 p-4">
+                    <strong>Error:</strong> {error}
+                </div>
+                <p className="mt-6 font-sans text-gray-600">This usually happens if the API Key is not configured correctly in the deployment environment. Please try refreshing.</p>
+                <Button onClick={() => window.location.reload()} variant="primary" className="mt-8 font-display text-xl">
+                    Try Again
+                </Button>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

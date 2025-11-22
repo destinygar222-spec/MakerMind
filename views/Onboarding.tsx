@@ -86,8 +86,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, initialProfi
         styleDescription: description || "A creative maker."
       };
       onComplete(finalProfile);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      // Let the user know something went wrong
+      alert(`Could not generate your Maker Persona. The AI service might be unavailable. Please try again. Error: ${e.message}`);
     } finally {
       setLoading(false);
     }

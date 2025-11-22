@@ -7,10 +7,18 @@ import { PROJECT_COLORS } from '../constants';
 let ai: GoogleGenAI | null = null;
 
 const getAiClient = (): GoogleGenAI => {
+  // In a browser environment, `process` might not be defined. This safely checks for the API key.
+  const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : undefined;
+
+  if (!apiKey) {
+    // This is a critical configuration error. By throwing a specific error,
+    // we allow our UI components to catch it and display a helpful message instead of a blank screen.
+    console.error("CRITICAL: Gemini API Key is missing. Ensure it is set as an environment variable in your deployment platform (e.g., Vercel).");
+    throw new Error("AI Service is not configured. Please ensure the API key is set up correctly.");
+  }
+  
   if (!ai) {
-    // This now runs only when the first API call is made, not on app load.
-    // It safely assumes process.env.API_KEY is available at runtime as per platform spec.
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    ai = new GoogleGenAI({ apiKey });
   }
   return ai;
 };
@@ -36,7 +44,9 @@ export const generateMakerPersona = async (styles: string[]): Promise<string> =>
     return response.text || "A creative maker with a unique blend of styles.";
   } catch (error) {
     console.error("Error generating persona:", error);
-    return "A diverse creative spirit.";
+    // Re-throw the error to be caught by the UI component
+    if (error instanceof Error) throw error;
+    throw new Error("A diverse creative spirit could not be generated.");
   }
 };
 
@@ -172,6 +182,7 @@ export const getRecommendedProjects = async (
 
   } catch (error) {
     console.error("Error generating projects:", error);
+    if (error instanceof Error) throw error;
     return [];
   }
 };
@@ -257,6 +268,7 @@ export const getStashBusterProject = async (inventory: Material[]): Promise<Proj
 
   } catch (error) {
     console.error("Stash buster error:", error);
+    if (error instanceof Error) throw error;
     return null;
   }
 };
@@ -299,6 +311,7 @@ export const findProjectResources = async (projectTitle: string, category: strin
     return uniqueResults.slice(0, 3); // Return top 3
   } catch (error) {
     console.error("Error finding resources:", error);
+    if (error instanceof Error) throw error;
     return [];
   }
 };
