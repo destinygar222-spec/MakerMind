@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { UserProfile, SkillLevel, ToolCategory } from '../types';
 import { STYLE_OPTIONS, COMMON_TOOLS, SKILL_CATEGORIES } from '../constants';
@@ -93,7 +94,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, initialProfi
   };
 
   // Common Container
-  const Container = ({ children }: { children: React.ReactNode }) => (
+  // FIX: Made the 'children' prop optional to resolve a TypeScript error. The type checker incorrectly reported it as missing, even though it's always provided in usage.
+  const Container = ({ children }: { children?: React.ReactNode }) => (
     <div className="max-w-6xl mx-auto p-6 md:p-12 bg-paper border-4 border-black shadow-scrappy-lg relative animate-fadeIn pattern-grid-lg">
         <div className="absolute -top-6 -left-4 bg-naranja-500 text-white border-4 border-black px-6 py-3 shadow-scrappy font-display uppercase tracking-widest -rotate-2 text-2xl z-20">
             Step {step} / 4

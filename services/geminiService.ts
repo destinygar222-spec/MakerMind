@@ -3,9 +3,18 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, Project, Material, SearchResult } from '../types';
 import { PROJECT_COLORS } from '../constants';
 
-// Initialize Gemini Client
-// NOTE: API Key is expected to be in process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazily initialize the Gemini Client to prevent startup crashes on deployment.
+let ai: GoogleGenAI | null = null;
+
+const getAiClient = (): GoogleGenAI => {
+  if (!ai) {
+    // This now runs only when the first API call is made, not on app load.
+    // It safely assumes process.env.API_KEY is available at runtime as per platform spec.
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+};
+
 
 /**
  * Analyzes selected style keywords to create a cohesive persona description.
@@ -19,7 +28,8 @@ export const generateMakerPersona = async (styles: string[]): Promise<string> =>
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: modelId,
       contents: prompt,
     });
@@ -99,7 +109,8 @@ export const getRecommendedProjects = async (
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
@@ -182,7 +193,8 @@ export const getStashBusterProject = async (inventory: Material[]): Promise<Proj
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
@@ -259,7 +271,8 @@ export const findProjectResources = async (projectTitle: string, category: strin
     : `tutorial how to make ${projectTitle}`;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: modelId,
       contents: `Find the best top 3 online tutorials or recipes for: "${projectTitle}".`,
       config: {
