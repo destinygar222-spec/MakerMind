@@ -7,6 +7,7 @@ import { Inventory } from './views/Inventory';
 import { ProjectDetail } from './views/ProjectDetail';
 import { Calendar } from './views/Calendar';
 import { Saved } from './views/Saved';
+import { isApiKeyConfigured } from './services/geminiService';
 
 const App: React.FC = () => {
   // Local Storage Persistence
@@ -59,6 +60,18 @@ const App: React.FC = () => {
 
   const [view, setView] = useState<ViewState>(user ? 'dashboard' : 'onboarding');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // State to manage the critical API key check
+  const [apiConfigStatus, setApiConfigStatus] = useState<'checking' | 'configured' | 'unconfigured'>('checking');
+
+  // Check for API key on initial app load
+  useEffect(() => {
+    if (isApiKeyConfigured()) {
+      setApiConfigStatus('configured');
+    } else {
+      setApiConfigStatus('unconfigured');
+    }
+  }, []);
 
   // Effects for persistence
   useEffect(() => {
@@ -207,6 +220,51 @@ const App: React.FC = () => {
       </footer>
     </div>
   );
+
+  // === RENDER LOGIC WITH API KEY CHECK ===
+
+  if (apiConfigStatus === 'checking') {
+    return (
+      <div className="fixed inset-0 bg-paper flex items-center justify-center">
+        <div className="text-6xl animate-spin">⚙️</div>
+      </div>
+    );
+  }
+
+  if (apiConfigStatus === 'unconfigured') {
+    return (
+      <div className="min-h-screen bg-sol-100 flex items-center justify-center p-4">
+        <div className="max-w-3xl w-full bg-white border-8 border-black shadow-scrappy-lg p-10 text-center -rotate-1">
+          <span className="text-7xl">✋</span>
+          <h1 className="font-display text-6xl text-rosa-600 mt-4 mb-4">Configuration Needed</h1>
+          <p className="font-sans text-2xl text-black mb-6">
+            Welcome to MakerMind! To get started, you need to add your Google Gemini API key.
+          </p>
+          <div className="text-left font-sans text-lg bg-paper border-4 border-dashed border-gray-300 p-6 space-y-4">
+            <p>This app cannot work without the API key. This is a common setup step for deployed web applications.</p>
+            <p>
+              <strong>If you are deploying on Vercel:</strong>
+            </p>
+            <ol className="list-decimal list-inside space-y-2 pl-4 font-bold">
+              <li>Go to your Project Settings in Vercel.</li>
+              <li>Navigate to the "Environment Variables" section.</li>
+              <li>Create a new variable with the name <code className="bg-sol-300 px-2 py-1 border border-black">API_KEY</code>.</li>
+              <li>Paste your Gemini API key into the value field.</li>
+              <li>Redeploy your project for the change to take effect.</li>
+            </ol>
+          </div>
+          <a 
+            href="https://vercel.com/docs/projects/environment-variables" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block mt-8 font-display text-xl bg-cobalt-500 text-white px-8 py-4 border-4 border-black shadow-scrappy hover:-translate-y-1 transition-transform"
+          >
+            Vercel Docs &rarr;
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!user || view === 'onboarding') {
     return (

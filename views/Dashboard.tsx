@@ -59,7 +59,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, inventory, onSelectP
                 <div className="font-sans text-lg text-gray-700 bg-white border-2 border-dashed border-gray-400 p-4">
                     <strong>Error:</strong> {error}
                 </div>
-                <p className="mt-6 font-sans text-gray-600">This usually happens if the API Key is not configured correctly in the deployment environment. Please try refreshing.</p>
+                <p className="mt-6 font-sans text-gray-600">This can happen due to network issues or if the AI service is temporarily unavailable. Please try refreshing.</p>
                 <Button onClick={() => window.location.reload()} variant="primary" className="mt-8 font-display text-xl">
                     Try Again
                 </Button>

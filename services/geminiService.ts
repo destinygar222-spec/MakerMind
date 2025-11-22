@@ -6,17 +6,28 @@ import { PROJECT_COLORS } from '../constants';
 // Lazily initialize the Gemini Client to prevent startup crashes on deployment.
 let ai: GoogleGenAI | null = null;
 
-const getAiClient = (): GoogleGenAI => {
-  // In a browser environment, `process` might not be defined. This safely checks for the API key.
+/**
+ * A safe, non-throwing function to check if the API key is present.
+ * This is used by the root App component to prevent a blank-screen crash on deployment.
+ */
+export const isApiKeyConfigured = (): boolean => {
   const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : undefined;
-
   if (!apiKey) {
-    // This is a critical configuration error. By throwing a specific error,
-    // we allow our UI components to catch it and display a helpful message instead of a blank screen.
-    console.error("CRITICAL: Gemini API Key is missing. Ensure it is set as an environment variable in your deployment platform (e.g., Vercel).");
-    throw new Error("AI Service is not configured. Please ensure the API key is set up correctly.");
+    console.warn("MakerMind Startup Warning: Gemini API Key is missing. The app will not be able to generate content. Please set the API_KEY environment variable in your deployment settings (e.g., Vercel).");
+    return false;
+  }
+  return true;
+};
+
+const getAiClient = (): GoogleGenAI => {
+  // This function is now called only after the initial check in App.tsx has passed.
+  // The error throw is a fallback for any unexpected edge cases.
+  if (!isApiKeyConfigured()) {
+    throw new Error("AI Service is not configured. Please ensure the API key is set up correctly in your environment variables.");
   }
   
+  const apiKey = process.env.API_KEY!; // We know it's available here.
+
   if (!ai) {
     ai = new GoogleGenAI({ apiKey });
   }
